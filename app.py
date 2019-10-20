@@ -25,5 +25,14 @@ def getPapers():
 
   return jsonify(data)
 
+@app.route('/papers/<int:id>')
+def getPaperAbstractAndTitle(id):
+  cursor = mysql.connection.cursor()
+  cursor.execute('SELECT paper_title, paper_abstract_PT FROM paper WHERE paper_id=' + str(id) + ';')
+  data = cursor.fetchall()
+  cursor.close()
+
+  return jsonify(data)
+
 if __name__ == '__main__':
   app.run(port=5000, debug=TRUE)
