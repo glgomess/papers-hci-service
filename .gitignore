@@ -1,0 +1,8 @@
+# Don't track content of these folders
+__pycache__/
+venv/
+.vscode/
+
+# Ignore the following files
+.DS_Store
+
