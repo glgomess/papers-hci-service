@@ -16,10 +16,10 @@ mysql = MySQL(app)
 def homepage():
   return "Homepage"
 
-@app.route('/test')
+@app.route('/papers')
 def getPapers():
   cursor = mysql.connection.cursor()
-  cursor.execute('SELECT * FROM author;')
+  cursor.execute('SELECT paper_id, paper_year, paper_title FROM paper;')
   data = cursor.fetchall()
   cursor.close()
 
