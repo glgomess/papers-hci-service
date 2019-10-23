@@ -1,5 +1,7 @@
 from flask import Flask, jsonify
 from flask_mysqldb import MySQL, MySQLdb
+import pandas as pd
+from pandas import DataFrame
 
 app = Flask(__name__)
 
@@ -31,22 +33,11 @@ def getPaperAbstractAndTitle(id):
   cursor.execute('SELECT paper_title, paper_abstract_PT FROM paper WHERE paper_id=' + str(id))
   paperInfo = cursor.fetchone()
 
-  cursor.execute('SELECT person_id FROM author WHERE paper_id=' + str(id))
-  getAuthorName = 'SELECT person_name FROM person WHERE '
-  firstTime = True
-  for author in cursor:
-    authorId = author['person_id']
-    if firstTime:
-      getAuthorName = getAuthorName + 'person_id=' + str(authorId)
-      firstTime = False
-    else:
-      getAuthorName = getAuthorName + ' OR person_id=' + str(authorId)
-  
-  cursor.execute(getAuthorName)
-  authors = []
-  for person in cursor:
-    authorName = person['person_name']
-    authors.append(authorName)
+  getAuthors = 'SELECT person.person_name FROM paper JOIN author ON author.paper_id = paper.paper_id JOIN person ON person.person_id = author.person_id WHERE author.paper_id=' + str(id)
+  cursor.execute(getAuthors)
+
+  authorsTable = pd.DataFrame(cursor.fetchall())
+  authors = authorsTable['person_name'].tolist()
 
   response = {
     'title': paperInfo['paper_title'],
@@ -56,9 +47,7 @@ def getPaperAbstractAndTitle(id):
   
   cursor.close()
 
-  return jsonify(response)
-
-
+  return response
 
 if __name__ == '__main__':
   app.run(port=5000, debug=TRUE)
