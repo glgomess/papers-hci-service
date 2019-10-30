@@ -30,14 +30,20 @@ def getPapers():
 @app.route('/papers/<int:id>')
 def getPaperAbstractAndTitle(id):
   cursor = mysql.connection.cursor()
-  cursor.execute('SELECT paper_title, paper_abstract_PT FROM paper WHERE paper_id=' + str(id))
+  cursor.execute(
+    'SELECT paper_title, paper_abstract_PT '
+    'FROM paper '
+    'WHERE paper_id=' + str(id))
   paperInfo = cursor.fetchone()
 
-  getAuthors = 'SELECT person.person_name FROM paper JOIN author ON author.paper_id = paper.paper_id JOIN person ON person.person_id = author.person_id WHERE author.paper_id=' + str(id)
-  cursor.execute(getAuthors)
-
+  cursor.execute(
+    'SELECT person.person_name '
+    'FROM paper '
+    'JOIN author ON author.paper_id = paper.paper_id '
+    'JOIN person ON person.person_id = author.person_id '
+    'WHERE author.paper_id=' + str(id))
   authorsTable = pd.DataFrame(cursor.fetchall())
-  authors = authorsTable['person_name'].tolist()
+  authors = authorsTable['person_name'].tolist() if not authorsTable.empty else []
 
   response = {
     'title': paperInfo['paper_title'],
@@ -49,5 +55,33 @@ def getPaperAbstractAndTitle(id):
 
   return response
 
+@app.route('/papers/<int:id>/references')
+def findPaperReferences(id):
+  cursor = mysql.connection.cursor()
+  cursor.execute(
+    'SELECT paper_as_reference.paper_id '
+    'FROM reference '
+    'JOIN paper_as_reference ON paper_as_reference.reference_id = reference.reference_id '
+    'WHERE reference.paper_id=' + str(id))
+  referencedPapersTable = pd.DataFrame(cursor.fetchall())
+  referencedPapers = referencedPapersTable['paper_id'].tolist() if not referencedPapersTable.empty else []
+
+  cursor.execute(
+    'SELECT reference.paper_id '
+    'FROM paper_as_reference '
+    'JOIN reference ON paper_as_reference.reference_id = reference.reference_id '
+    'WHERE paper_as_reference.paper_id=' + str(id))
+  citationsTable = pd.DataFrame(cursor.fetchall())
+  citations = citationsTable['paper_id'].tolist() if not citationsTable.empty else []
+
+  response = {
+    'references': referencedPapers,
+    'citations': citations
+  }
+
+  cursor.close()
+
+  return response
+
 if __name__ == '__main__':
-  app.run(port=5000, debug=TRUE)
+  app.run(port=5000, debug=True)
