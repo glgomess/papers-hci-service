@@ -21,11 +21,14 @@ def homepage():
 @app.route('/papers')
 def getPapers():
   cursor = mysql.connection.cursor()
-  cursor.execute('SELECT paper_id, paper_year, paper_title FROM paper')
-  data = cursor.fetchall()
+  cursor.execute('SELECT paper_id, paper_year, paper_title FROM paper LIMIT 50')
+  papers = cursor.fetchall()
   cursor.close()
 
-  return jsonify(data)
+  papersTable = pd.DataFrame(papers)
+  papersByYear = papersTable.groupby(["paper_year"])[['paper_id', 'paper_title']].apply(lambda x: x.values.tolist())
+  
+  return papersByYear.to_json()
 
 @app.route('/papers/<int:id>')
 def getPaperAbstractAndTitle(id):
