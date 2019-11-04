@@ -21,7 +21,7 @@ def homepage():
 @app.route('/papers')
 def getPapers():
   cursor = mysql.connection.cursor()
-  cursor.execute('SELECT paper_id, paper_year, paper_title FROM paper LIMIT 50')
+  cursor.execute('SELECT paper_id, paper_year, paper_title FROM paper')
   papers = cursor.fetchall()
   cursor.close()
 
