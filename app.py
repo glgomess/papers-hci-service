@@ -62,24 +62,26 @@ def getPaperAbstractAndTitle(id):
 def findPaperReferences(id):
   cursor = mysql.connection.cursor()
   cursor.execute(
-    'SELECT paper_as_reference.paper_id '
+    'SELECT paper_as_reference.paper_id, paper.paper_title '
     'FROM reference '
     'JOIN paper_as_reference ON paper_as_reference.reference_id = reference.reference_id '
+    'JOIN paper ON paper_as_reference.paper_id = paper.paper_id '
     'WHERE reference.paper_id=' + str(id))
   referencedPapersTable = pd.DataFrame(cursor.fetchall())
-  referencedPapers = referencedPapersTable['paper_id'].tolist() if not referencedPapersTable.empty else []
+  referencedPapers = referencedPapersTable.values.tolist() 
 
   cursor.execute(
-    'SELECT reference.paper_id '
+    'SELECT reference.paper_id, paper.paper_title '
     'FROM paper_as_reference '
     'JOIN reference ON paper_as_reference.reference_id = reference.reference_id '
+    'JOIN paper ON reference.paper_id = paper.paper_id '
     'WHERE paper_as_reference.paper_id=' + str(id))
   citationsTable = pd.DataFrame(cursor.fetchall())
-  citations = citationsTable['paper_id'].tolist() if not citationsTable.empty else []
+  citations = citationsTable.values.tolist()
 
   response = {
-    'references': referencedPapers,
-    'citations': citations
+    'cited': referencedPapers,
+    'citedBy': citations
   }
 
   cursor.close()
