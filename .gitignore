@@ -5,3 +5,5 @@
 
 .DS_Store
 /flask-app/app.pyc
+
+/docker-container/docker-logstash-image/mysql-connector-java-5.1.46/

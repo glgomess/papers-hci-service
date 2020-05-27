@@ -1,0 +1,52 @@
+version: '3.8'
+services:
+  elasticsearch:
+      image: docker.elastic.co/elasticsearch/elasticsearch:7.7.0
+      container_name: elasticsearch
+      ports:
+        - 9200:9200
+      environment:
+        - node.name=elasticsearch
+        - cluster.name=es-docker-cluster
+        - bootstrap.memory_lock=true
+        - discovery.type=single-node
+        - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      volumes:
+        - data01:/usr/share/elasticsearch/data
+      networks:
+        - elastic
+  logstash:
+      image: logstash-image:1.6
+      container_name: logstash
+      ports:
+          - 5044:5044
+      environment:
+          - LOGSTASH_JDBC_DRIVER_JAR_LOCATION=/lib/mysql-connector-java-5.1.46/mysql-connector-java-5.1.46-bin.jar
+          - LOGSTASH_JDBC_DRIVER=com.mysql.jdbc.Driver
+          - MYSQL_HOST=host.docker.internal
+          - MYSQL_PORT=3306
+          - DATABASE_NAME=ihc
+          - MYSQL_USER=root
+          - MYSQL_USER_PASSWORD=bonjovi7
+          - ELASTIC_INDEX=papers
+          - ELASTIC_DOC_TYPE=paper
+      networks:
+        - elastic
+      depends_on:
+        - elasticsearch
+        - kibana
+  kibana:
+      image: docker.elastic.co/kibana/kibana:7.7.0
+      container_name: kibana
+      ports:
+        - 5601:5601
+      networks:
+        - elastic
+      depends_on:
+        - elasticsearch
+volumes:
+  data01:
+    driver: local
+networks:
+  elastic:
+    driver: bridge

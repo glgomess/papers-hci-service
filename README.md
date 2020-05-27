@@ -10,3 +10,7 @@ Go to `/flask-app` path and run:
 export FLASK_ENV=development
 flask run
 ```
+
+## Docker container
+
+See `/docker-container/README.md` to further information.
