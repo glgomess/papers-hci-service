@@ -1,8 +1,7 @@
-# Don't track content of these folders
-__pycache__/
-venv/
-.vscode/
+# Don't track content of these folders or files
+/flask-app/__pycache__/
+/flask-app/venv/
+/flask-app/.vscode/
 
-# Ignore the following files
 .DS_Store
-
+/flask-app/app.pyc
