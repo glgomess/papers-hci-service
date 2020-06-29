@@ -7,14 +7,48 @@ Back-end service to access IHC Database on MySQL and provide endpoints to perfor
 ### Prerequisites
 - Have [Docker](https://docs.docker.com/get-docker/) installed on your machine
 
-### Installing
+### Installing (easy configuration)
 1. Clone this repository
 2. Download [mysql-connector-java:5.1.46](https://jar-download.com/artifacts/mysql/mysql-connector-java/5.1.46/source-code)
 3. Save the folder as `mysql-connector-java-5.1.46` inside `docker-container/docker-logstash-image/`
 4. On terminal go to `docker-container` folder
 5. Check if `docker-compose.yml` file has the correct MYSQL database information (MYSQL_HOST, MYSQL_PORT, DATABASE_NAME, MYSQL_USER, MYSQL_USER_PASSWORD)
-5. Run `docker build -t logstash-image:1.0 docker-logstash-image/`
-6. Run `docker-compose up --build`
+6. Run `docker build -t logstash-image:1.16 docker-logstash-image/`
+7. Run `docker-compose up --build`
+
+Your containers should be up and running!
+Check ElasticSearch with: `curl -X GET "localhost:9200/_cat/nodes?v&pretty"`
+Check Kibana on: `http://localhost:5601`
+Check indexed data with: ``curl -X GET "localhost:9200/papers/_search"`
+
+### Installing (complete configuration)
+1. Clone this repository
+2. Download [mysql-connector-java:5.1.46](https://jar-download.com/artifacts/mysql/mysql-connector-java/5.1.46/source-code)
+3. Save the folder as `mysql-connector-java-5.1.46` inside `docker-container/docker-logstash-image/`
+4. On terminal go to `docker-container` folder
+5. Check if `docker-compose.yml` file has the correct MYSQL database information (MYSQL_HOST, MYSQL_PORT, DATABASE_NAME, MYSQL_USER, MYSQL_USER_PASSWORD)
+6. Comment logstash configuration in `docker-compose.yml`:
+```
+  # logstash:
+  #     image: logstash-image:1.16
+  #     container_name: logstash
+  ...
+  #     depends_on:
+  #       - es01
+  #       - kibana
+```
+7. Run `docker-compose up --build`
+8. Check if your cluster is up and running with:
+```
+curl -XGET "http://es01:9200/_cluster/health"
+```
+9. Then, create new index `papers` by running:
+```
+curl -XPUT "http://es01:9200/papers" -H 'Content-Type: application/json' -d'{  "mappings" : {    "properties" : {      "paper_abstract_en" : {        "type" : "text",        "analyzer": "english"      },      "paper_abstract_es" : {        "type" : "text",        "analyzer": "spanish"      },      "paper_abstract_pt" : {        "type" : "text",        "analyzer": "brazilian"      },      "paper_acm_category" : {        "type" : "text"      },      "paper_acm_key" : {        "type" : "text"      },      "paper_acm_terms" : {        "type" : "text"      },      "paper_authors" : {        "type" : "text"      },      "paper_id" : {        "type" : "keyword"      },      "paper_language" : {        "type" : "keyword"      },      "paper_num_authors" : {        "type" : "long"      },      "paper_references" : {        "properties": {          "paper_reference": {            "type": "text"          },          "paper_reference_id": {            "type": "integer"          }        }      },      "paper_theme" : {        "type" : "text",        "fields" : {          "keyword" : {            "type" : "keyword",            "ignore_above" : 256          }        }      },      "paper_title" : {        "type" : "text"              },      "paper_year" : {        "type" : "integer"      }    }  }}'
+```
+10. Uncomment logstash configuration in `docker-compose.yml`
+11. Run `docker build -t logstash-image:1.16 docker-logstash-image/`
+12. Run `docker-compose up --build`
 
 Your containers should be up and running!
 Check ElasticSearch with: `curl -X GET "localhost:9200/_cat/nodes?v&pretty"`
