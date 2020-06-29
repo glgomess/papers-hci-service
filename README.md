@@ -12,6 +12,7 @@ Back-end service to access IHC Database on MySQL and provide endpoints to perfor
 2. Download [mysql-connector-java:5.1.46](https://jar-download.com/artifacts/mysql/mysql-connector-java/5.1.46/source-code)
 3. Save the folder as `mysql-connector-java-5.1.46` inside `docker-container/docker-logstash-image/`
 4. On terminal go to `docker-container` folder
+5. Check if `docker-compose.yml` file has the correct MYSQL database information (MYSQL_HOST, MYSQL_PORT, DATABASE_NAME, MYSQL_USER, MYSQL_USER_PASSWORD)
 5. Run `docker build -t logstash-image:1.0 docker-logstash-image/`
 6. Run `docker-compose up --build`
 
