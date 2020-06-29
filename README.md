@@ -16,10 +16,11 @@ Back-end service to access IHC Database on MySQL and provide endpoints to perfor
 6. Run `docker build -t logstash-image:1.16 docker-logstash-image/`
 7. Run `docker-compose up --build`
 
-Your containers should be up and running!
-Check ElasticSearch with: `curl -X GET "localhost:9200/_cat/nodes?v&pretty"`
-Check Kibana on: `http://localhost:5601`
-Check indexed data with: ``curl -X GET "localhost:9200/papers/_search"`
+Your containers should be up and running! \
+Check ElasticSearch with: `curl -X GET "localhost:9200/_cat/nodes?v&pretty"` \
+Check Kibana on: `http://localhost:5601` \
+Check indexed data with: `curl -X GET "localhost:9200/papers/_search"` \
+Check **DEFAULT** `papers` index mapping: `curl -XGET "http://es01:9200/papers/_mapping"`
 
 ### Installing (complete configuration)
 1. Clone this repository
@@ -50,10 +51,11 @@ curl -XPUT "http://es01:9200/papers" -H 'Content-Type: application/json' -d'{  "
 11. Run `docker build -t logstash-image:1.16 docker-logstash-image/`
 12. Run `docker-compose up --build`
 
-Your containers should be up and running!
-Check ElasticSearch with: `curl -X GET "localhost:9200/_cat/nodes?v&pretty"`
-Check Kibana on: `http://localhost:5601`
-Check indexed data with: ``curl -X GET "localhost:9200/papers/_search"`
+Your containers should be up and running! \
+Check ElasticSearch with: `curl -X GET "localhost:9200/_cat/nodes?v&pretty"` \
+Check Kibana on: `http://localhost:5601` \
+Check indexed data with: `curl -X GET "localhost:9200/papers/_search"` \
+Check **CUSTOM** `papers` index mapping: `curl -XGET "http://es01:9200/papers/_mapping"`
 
 ## Docker container - v2
 
