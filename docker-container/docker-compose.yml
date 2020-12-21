@@ -1,99 +1,129 @@
-version: '3.8'
+version: "3.8"
 services:
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_DATABASE: "db"
+      # So you don't have to use root, but you can if you like
+      MYSQL_USER: "root"
+      # You can use whatever password you like
+      MYSQL_PASSWORD: "Livia.97"
+      # Password for root access
+      MYSQL_ROOT_PASSWORD: "Livia.97"
+    ports:
+      # <Port exposed> : < MySQL Port running inside container>
+      - "3306:3306"
+    expose:
+      # Opens port 3306 on the container
+      - "3306"
+      # Where our data will be persisted
+    volumes:
+      - my-db:/var/lib/mysql
   es01:
-      image: docker.elastic.co/elasticsearch/elasticsearch:7.7.1
-      container_name: es01
-      environment:
-        - node.name=es01
-        - cluster.name=es-docker-cluster
-        - discovery.seed_hosts=es02,es03
-        - cluster.initial_master_nodes=es01
-        - bootstrap.memory_lock=true
-        - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-      ports:
-        - 9200:9200
-      ulimits:
-        memlock:
-          soft: -1
-          hard: -1
-      volumes:
-        - data01:/usr/share/elasticsearch/data
-      networks:
-        - elastic_network
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.7.1
+    container_name: es01
+    environment:
+      - node.name=es01
+      - cluster.name=es-docker-cluster
+      - discovery.seed_hosts=es02,es03
+      - cluster.initial_master_nodes=es01
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - 9200:9200
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - data01:/usr/share/elasticsearch/data
+    networks:
+      - elastic_network
+    depends_on: 
+      - db
   es02:
-      image: docker.elastic.co/elasticsearch/elasticsearch:7.7.1
-      container_name: es02
-      environment:
-        - node.name=es02
-        - cluster.name=es-docker-cluster
-        - discovery.seed_hosts=es01,es03
-        - cluster.initial_master_nodes=es01
-        - bootstrap.memory_lock=true
-        - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-      ulimits:
-        memlock:
-          soft: -1
-          hard: -1
-      volumes:
-        - data02:/usr/share/elasticsearch/data
-      networks:
-        - elastic_network
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.7.1
+    container_name: es02
+    environment:
+      - node.name=es02
+      - cluster.name=es-docker-cluster
+      - discovery.seed_hosts=es01,es03
+      - cluster.initial_master_nodes=es01
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - data02:/usr/share/elasticsearch/data
+    networks:
+      - elastic_network
+    depends_on: 
+      - db
   es03:
-      image: docker.elastic.co/elasticsearch/elasticsearch:7.7.1
-      container_name: es03
-      environment:
-        - node.name=es03
-        - cluster.name=es-docker-cluster
-        - discovery.seed_hosts=es01,es02
-        - cluster.initial_master_nodes=es01
-        - bootstrap.memory_lock=true
-        - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-      ulimits:
-        memlock:
-          soft: -1
-          hard: -1
-      volumes:
-        - data03:/usr/share/elasticsearch/data
-      networks:
-        - elastic_network
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.7.1
+    container_name: es03
+    environment:
+      - node.name=es03
+      - cluster.name=es-docker-cluster
+      - discovery.seed_hosts=es01,es02
+      - cluster.initial_master_nodes=es01
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - data03:/usr/share/elasticsearch/data
+    networks:
+      - elastic_network
+    depends_on: 
+      - db
   logstash:
-      image: logstash-image:1.16
-      container_name: logstash
-      environment:
-          - LOGSTASH_JDBC_DRIVER_JAR_LOCATION=/lib/mysql-connector-java-5.1.46/mysql-connector-java-5.1.46-bin.jar
-          - LOGSTASH_JDBC_DRIVER=com.mysql.jdbc.Driver
-          - MYSQL_HOST=host.docker.internal
-          - MYSQL_PORT=3306
-          - DATABASE_NAME=ihc
-          - MYSQL_USER=root
-          - MYSQL_USER_PASSWORD=bonjovi7
-          - ELASTIC_INDEX=papers
-          - ELASTIC_DOC_TYPE=paper
-          - ELASTIC_HOST=http://es01:9200
-      ports:
-          - 5044:5044
-      networks:
-        - elastic_network
-      depends_on:
-        - es01
-        - kibana
+    image: logstash-image:1.20
+    container_name: logstash
+    environment:
+      - LOGSTASH_JDBC_DRIVER_JAR_LOCATION=/lib/mysql-connector-java-5.1.46/mysql-connector-java-5.1.46.jar
+      - LOGSTASH_JDBC_DRIVER=com.mysql.jdbc.Driver
+      - MYSQL_HOST=host.docker.internal
+      - MYSQL_PORT=3306
+      - DATABASE_NAME=db
+      - MYSQL_USER=root
+      - MYSQL_USER_PASSWORD=Livia.97
+      - ELASTIC_INDEX=papers
+      - ELASTIC_INDEX_1=papers
+      - ELASTIC_INDEX_2=authors
+      - ELASTIC_DOC_TYPE=paper
+      - ELASTIC_HOST=http://es01:9200
+    ports:
+      - 5044:5044
+    networks:
+      - elastic_network
+    depends_on:
+      - db
+      - es01
+      - kibana
   kibana:
-      image: docker.elastic.co/kibana/kibana:7.7.0
-      container_name: kibana
-      environment:
-        ELASTICSEARCH_HOSTS: http://es01:9200
-      ports:
-        - 5601:5601
-      networks:
-        - elastic_network
-      depends_on:
-        - es01
+    image: docker.elastic.co/kibana/kibana:7.7.0
+    container_name: kibana
+    environment:
+      ELASTICSEARCH_HOSTS: http://es01:9200
+    ports:
+      - 5601:5601
+    networks:
+      - elastic_network
+    depends_on:
+      - es01
 volumes:
   data01:
     driver: local
   data02:
     driver: local
   data03:
+    driver: local
+  my-db:
     driver: local
 networks:
   elastic_network:
