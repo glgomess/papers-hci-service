@@ -13,7 +13,7 @@ Back-end service to access IHC Database on MySQL and provide endpoints to perfor
 3. Save the folder as `mysql-connector-java-5.1.46` inside `docker-container/docker-logstash-image/`
 4. On terminal go to `docker-container` folder
 5. Check if `docker-compose.yml` file has the correct MYSQL database information (MYSQL_HOST, MYSQL_PORT, DATABASE_NAME, MYSQL_USER, MYSQL_USER_PASSWORD)
-6. Run `docker build -t logstash-image:1.16 docker-logstash-image/`
+6. Run `docker build -t logstash-image:1.20 docker-logstash-image/`
 7. Run `docker-compose up --build`
 
 Your containers should be up and running! \
@@ -41,11 +41,11 @@ Check **DEFAULT** `papers` index mapping: `curl -XGET "http://es01:9200/papers/_
 7. Run `docker-compose up --build`
 8. Check if your cluster is up and running with:
 ```
-curl -XGET "http://es01:9200/_cluster/health"
+curl -XGET "http://localhost:9200/_cluster/health"
 ```
 9. Then, create new index `papers` by running:
 ```
-curl -XPUT "http://es01:9200/papers" -H 'Content-Type: application/json' -d'{  "mappings" : {    "properties" : {      "paper_abstract_en" : {        "type" : "text",        "analyzer": "english"      },      "paper_abstract_es" : {        "type" : "text",        "analyzer": "spanish"      },      "paper_abstract_pt" : {        "type" : "text",        "analyzer": "brazilian"      },      "paper_acm_category" : {        "type" : "text"      },      "paper_acm_key" : {        "type" : "text"      },      "paper_acm_terms" : {        "type" : "text"      },      "paper_authors" : {        "type" : "text"      },      "paper_id" : {        "type" : "keyword"      },      "paper_language" : {        "type" : "keyword"      },      "paper_num_authors" : {        "type" : "long"      },      "paper_references" : {        "properties": {          "paper_reference": {            "type": "text"          },          "paper_reference_id": {            "type": "integer"          }        }      },      "paper_theme" : {        "type" : "text",        "fields" : {          "keyword" : {            "type" : "keyword",            "ignore_above" : 256          }        }      },      "paper_title" : {        "type" : "text"              },      "paper_year" : {        "type" : "integer"      }    }  }}'
+curl -XPUT "http://localhost:9200/papers" -H 'Content-Type: application/json' -d'{  "mappings" : {    "properties" : {      "paper_abstract_en" : {        "type" : "text",        "analyzer": "english"      },      "paper_abstract_es" : {        "type" : "text",        "analyzer": "spanish"      },      "paper_abstract_pt" : {        "type" : "text",        "analyzer": "brazilian"      },      "paper_acm_category" : {        "type" : "text"      },      "paper_acm_key" : {        "type" : "text"      },      "paper_acm_terms" : {        "type" : "text"      },      "paper_authors" : {        "type" : "text"      },      "paper_id" : {        "type" : "keyword"      },      "paper_language" : {        "type" : "keyword"      },      "paper_num_authors" : {        "type" : "long"      },      "paper_references" : {        "properties": {          "paper_reference": {            "type": "text"          },          "paper_reference_id": {            "type": "integer"          }        }      },      "paper_theme" : {        "type" : "text",        "fields" : {          "keyword" : {            "type" : "keyword",            "ignore_above" : 256          }        }      },      "paper_title" : {        "type" : "text"              },      "paper_year" : {        "type" : "integer"      }    }  }}'
 ```
 
 9.1 create a new index `authors` by running:
@@ -57,7 +57,7 @@ curl -XPUT "http://localhost:9200/authors" -H 'Content-Type: application/json' -
 ```
 
 10. Uncomment logstash configuration in `docker-compose.yml`
-11. Run `docker build -t logstash-image:1.18 docker-logstash-image/`
+11. Run `docker build -t logstash-image:1.21 docker-logstash-image/`
 12. Run `docker-compose up --build`
 
 Your containers should be up and running! \
