@@ -56,8 +56,15 @@ curl -XPUT "http://localhost:9200/authors" -H 'Content-Type: application/json' -
 }}} '      
 ```
 
+9.2 create a new index `keywords` by running:
+
+```
+curl -XPUT "http://localhost:9200/keywords" -H 'Content-Type: application/json' -d'{  "mappings" : {    "properties" : { "keyword_id" : { "type" : "text" }, "keyword_EN" : { "type" : "text" }, "papers_list": { "type" : "text" }
+}}} '      
+```
+
 10. Uncomment logstash configuration in `docker-compose.yml`
-11. Run `docker build -t logstash-image:1.21 docker-logstash-image/`
+11. Run `docker build -t logstash-image:1.23 docker-logstash-image/`
 12. Run `docker-compose up --build`
 
 Your containers should be up and running! \

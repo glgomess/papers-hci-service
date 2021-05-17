@@ -83,7 +83,7 @@ services:
     depends_on: 
       - mysql
   logstash:
-    image: logstash-image:1.21
+    image: logstash-image:1.23
     container_name: logstash
     environment:
       - LOGSTASH_JDBC_DRIVER_JAR_LOCATION=/lib/mysql-connector-java-5.1.46/mysql-connector-java-5.1.46.jar
@@ -96,6 +96,7 @@ services:
       - ELASTIC_INDEX=papers
       - ELASTIC_INDEX_1=papers
       - ELASTIC_INDEX_2=authors
+      - ELASTIC_INDEX_3=keywords
       - ELASTIC_DOC_TYPE=paper
       - ELASTIC_HOST=http://es01:9200
     ports:
