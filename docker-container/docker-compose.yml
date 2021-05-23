@@ -83,7 +83,7 @@ services:
     depends_on: 
       - mysql
   logstash:
-    image: logstash-image:1.23
+    image: logstash-image:1.25
     container_name: logstash
     environment:
       - LOGSTASH_JDBC_DRIVER_JAR_LOCATION=/lib/mysql-connector-java-5.1.46/mysql-connector-java-5.1.46.jar
