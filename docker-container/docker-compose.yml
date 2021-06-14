@@ -4,16 +4,18 @@ services:
     image: mysql:5.7
     container_name: ihc_mysql
     environment:
-      MYSQL_DATABASE: "db_ihc"
+      MYSQL_DATABASE: ${DB_NAME}
       # So you don't have to use root, but you can if you like
-      MYSQL_USER: "root"
+      MYSQL_USER: ${DB_USER}
       # You can use whatever password you like
-      MYSQL_PASSWORD: "Livia.97"
+      MYSQL_PASSWORD: ${DB_PASSWORD}
       # Password for root access
-      MYSQL_ROOT_PASSWORD: "Livia.97"
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
     ports:
       # <Port exposed> : < MySQL Port running inside container>
       - "3306:3306"
+    networks: 
+      - elastic_network
     expose:
       # Opens port 3306 on the container
       - "3306"
