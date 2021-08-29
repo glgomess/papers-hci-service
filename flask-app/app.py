@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request, json
 from flask_mysqldb import MySQL, MySQLdb
 import pandas as pd
 from pandas import DataFrame
@@ -17,6 +17,37 @@ mysql = MySQL(app)
 @app.route('/')
 def homepage():
   return "Homepage"
+
+@app.route('/login')
+def login():
+  senha = 'senha'
+  username = request.json['username']
+  password = request.json['password']
+  users = {'guilherme':'senha'}
+
+  encryptedPassword = password.encode("utf-8")
+  if(encryptedPassword == senha.encode("utf-8")):
+    return app.response_class(
+      response=json.dumps('idunico'),
+      status=200,
+      mimetype='application/json'
+    )
+  else:
+    return app.response_class(
+      response=json.dumps('idunico'),
+      status=403,
+      mimetype='application/json'
+  ) 
+
+  # Generate hash for PW
+  # Validate on DB
+  # 400 if found, but wrong password
+  # 403 if not found
+  # Implement HTTPS w/ SSL/TLS for secure authentication
+  
+  print(username)
+  print(password)
+  return 'login'
 
 @app.route('/papers')
 def getPapers():
