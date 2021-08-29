@@ -1,10 +1,11 @@
 from flask import Flask, jsonify, request, json
+from flask_cors import CORS, cross_origin
 from flask_mysqldb import MySQL, MySQLdb
 import pandas as pd
 from pandas import DataFrame
-
 app = Flask(__name__)
-
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 # Database Configurations
 app.config['MYSQL_HOST'] = '139.82.120.3'
 app.config['MYSQL_USER'] = 'gabiguti'
@@ -18,11 +19,12 @@ mysql = MySQL(app)
 def homepage():
   return "Homepage"
 
-@app.route('/login')
+@app.route('/login', methods=['POST'])
+@cross_origin()
 def login():
   senha = 'senha'
-  username = request.json['username']
-  password = request.json['password']
+  username = request.json['data']['username']
+  password = request.json['data']['password']
   users = {'guilherme':'senha'}
 
   encryptedPassword = password.encode("utf-8")
@@ -43,11 +45,10 @@ def login():
   # Validate on DB
   # 400 if found, but wrong password
   # 403 if not found
+  # 200 if OK
+  # Generate unique id
+  # Store ID on Redis
   # Implement HTTPS w/ SSL/TLS for secure authentication
-  
-  print(username)
-  print(password)
-  return 'login'
 
 @app.route('/papers')
 def getPapers():
